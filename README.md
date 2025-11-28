@@ -1,29 +1,165 @@
-**Refactor** `embed.py`
-This file is responsible for taking a document, chunking it, embedding the chunks, and storing them in the vector database.
+# 🧠 RAG_LLM — Local & Private Retrieval-Augmented Generation with FastAPI + Ollama + Qdrant
 
-- **Old Logic**: Your old code used db.`add_documents(chunks)`, which is a high-level LangChain command.
+A fully local AI chatbot that can ingest your PDFs, store knowledge in a vector database, and answer questions **grounded** in your documents — with **no data leaving your machine**.
 
-- **New Logic**: We will perform each of these steps manually to give you a clear understanding of what's happening.
+Built for fast iteration, privacy, and real-world usage.
 
-        - First, call `get_vector_db()` to get your Qdrant client instance.
+---
 
-        - Then, use `OllamaEmbeddings` to generate a list of vectors from your document chunks.
+## ⚡ Features
 
-        - Finally, use `client.upsert()` to push the vectors to your Qdrant collection, including the original text as metadata. This metadata is essential for the retrieval step.
+| Feature                    | Benefit                              |
+| -------------------------- | ------------------------------------ |
+| Local LLM (Ollama)         | No cloud charges, full privacy       |
+| Qdrant Vector DB           | Fast semantic search                 |
+| LangChain RAG Pipeline     | Accurate answers grounded in docs    |
+| PDF ingestion              | Build your own knowledge base        |
+| Chunking + embeddings      | Better recall and context coverage   |
+| Dockerized deployment      | Works anywhere with a single command |
+| Authentication via API Key | Blocks unauthorized access           |
 
---- 
+---
 
-**Refactor** `query.py`
-This file is responsible for taking a user's query, finding relevant context, and generating a response.
+## 🧩 Architecture
 
-- **Old Logic**: My old code used `MultiQueryRetriever`, which simplifies the retrieval process but hides the underlying mechanism.
+```
+              ┌──────────────┐
+    PDF ───►  │ Ingestion API │─────────┐
+              └───────┬──────┘         │
+                      │                 ▼
+                Text Splitter      Qdrant VectorDB
+                      │                 ▲
+                      ▼                 │
+                 Embedding Model ───────┘
+                      │
+                      ▼
+     Question ─►  RAG Pipeline ─► Local LLM (Ollama)
+                      │
+                      ▼
+                   Answer ✔
+```
 
-- **New Logic**: We will explicitly handle the vector search and context extraction.
+---
 
-        - First, get your Qdrant client.
+## 🏗 Tech Stack
 
-        - Then, embed the user's query.
+* 🧩 **FastAPI**
+* 🧬 **LangChain**
+* 🧠 **Ollama** (Llama3 / Mistral models)
+* 🗄 **Qdrant** (cloud or local)
+* 🐳 **Docker & Docker Compose**
 
-        - Use `client.search()` to find the `top_k` documents. The results from Qdrant's search contain a payload field with the original text we stored in the `embed.py` step.
+---
 
-        - Extract this text and use it as the context for your LLM prompt.
+## 🚀 Getting Started
+
+### Clone the repo
+
+```bash
+git clone https://github.com/Rishy-09/RAG_LLM.git
+cd RAG_LLM
+```
+
+---
+
+### Setup environment variables
+
+Copy and fill your values:
+
+```bash
+cp .env.example .env
+```
+
+Required keys:
+
+```
+QDRANT_URL=YOUR_ENDPOINT
+QDRANT_API_KEY=YOUR_KEY
+QDRANT_COLLECTION=rag_collection
+
+OLLAMA_HOST=http://localhost:11434
+LLM_MODEL=llama3:instruct
+TEXT_EMBEDDING_MODEL=nomic-embed-text
+
+TEMP_FOLDER=./_temp
+API_KEY=YOUR_FASTAPI_KEY
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=150
+TOP_K=5
+```
+
+> Don’t commit your real `.env` to GitHub. `.gitignore` protects it.
+
+---
+
+## ▶ Run with Docker
+
+```bash
+docker compose up --build
+```
+
+Wait until services are running.
+
+---
+
+## 🔌 API Endpoints
+
+| Method | Endpoint  | Description                    |
+| ------ | --------- | ------------------------------ |
+| POST   | `/ingest` | Upload PDF → Embed into Qdrant |
+| POST   | `/query`  | Ask a question, get RAG answer |
+| GET    | `/docs`   | Swagger API UI                 |
+
+Example request:
+
+```bash
+curl -X POST "http://localhost:8000/query" \
+ -H "x-api-key: YOUR_KEY" \
+ -H "Content-Type: application/json" \
+ -d '{"question": "What does the PDF say about pricing?"}'
+```
+
+Response includes:
+✔ Answer
+✔ Source text chunks
+✔ Confidence based on retrieval score
+
+---
+
+## 🧪 Local Model Downloads (Ollama)
+
+Install Ollama: [https://ollama.ai](https://ollama.ai)
+
+Pull a model:
+
+```bash
+ollama pull llama3:instruct
+```
+
+Switch models easily via `.env`.
+
+---
+
+## 🔐 Security Notes
+
+* API requires `x-api-key`
+* CORS restricted (only allowed origins)
+* Secrets never stored in Git
+* Safe for local confidential documents
+
+---
+
+## 🛤 Roadmap
+
+* Web UI for chatting with sources
+* Streaming responses
+* Multi-user document buckets
+* Citations with timestamps + PDF page mapping
+
+---
+
+## 🖤 Credits
+
+Made by Naman (Rishy-09)
+Open-source forever.
+---
