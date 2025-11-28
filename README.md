@@ -39,7 +39,11 @@ Built for fast iteration, privacy, and real-world usage.
                    Answer ✔
 ```
 
+![image1](imgproj5.jpg)
+
 ---
+
+
 
 ## 🏗 Tech Stack
 
@@ -91,6 +95,7 @@ TOP_K=5
 > Don’t commit your real `.env` to GitHub. `.gitignore` protects it.
 
 ---
+![image1](imgproj1.jpg)
 
 ## ▶ Run with Docker
 
@@ -119,6 +124,7 @@ curl -X POST "http://localhost:8000/query" \
  -d '{"question": "What does the PDF say about pricing?"}'
 ```
 
+![image2](imgproj2.jpg)
 Response includes:
 ✔ Answer
 ✔ Source text chunks
@@ -135,6 +141,8 @@ Pull a model:
 ```bash
 ollama pull llama3:instruct
 ```
+
+![image4](imgjproj4.jpg)
 
 Switch models easily via `.env`.
 
@@ -157,6 +165,7 @@ Switch models easily via `.env`.
 * Citations with timestamps + PDF page mapping
 
 ---
+![image3](imgproj3.jpg)
 
 ## 🖤 Credits
 
