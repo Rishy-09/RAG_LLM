@@ -1,0 +1,14 @@
+# Environment and Secrets
+.env
+
+# Local LLM and Vector Store Artifacts
+*.gguf # Excludes the large LLM model file
+vector_store/ # Excludes the local vector database folder
+_temp/ # Excludes your temporary upload folder
+/temp # A generic rule to catch temp folders
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/

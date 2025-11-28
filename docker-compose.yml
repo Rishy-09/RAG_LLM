@@ -1,0 +1,39 @@
+services:
+  # The FastAPI application service
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./_temp:/app/_temp
+    depends_on:
+      ollama:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+
+  # The Ollama model server
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+      - ./ollama_startup.sh:/ollama_startup.sh
+    entrypoint: ["/bin/sh", "-c", "apt-get update && apt-get install -y curl && chmod +x /ollama_startup.sh && /ollama_startup.sh"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      # Add this grace period to allow time for model downloads
+      start_period: 600s
+
+volumes:
+  # A named volume to store Ollama models persistently
+  ollama_models:
