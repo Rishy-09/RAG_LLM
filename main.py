@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
     logging.info("Application starting up...")
     os.makedirs(TEMP_DIR, exist_ok=True)
     app.state.qdrant_client = get_vector_db()
-    app.state.embeding_model = OllamaEmbeddings(model=TEXT_EMBEDDING_MODEL) 
+    app.state.embedding_model = OllamaEmbeddings(model=TEXT_EMBEDDING_MODEL)
     logging.info("Shared resources (Qdrant client, Embedding model) initialized.")
     yield
     # This code runs at application shutdown
@@ -73,7 +73,7 @@ async def ingest_document(request: Request, file: UploadFile = File(...)):
             # Run the synchronous, blocking embed function in a separate thread
             await asyncio.to_thread(
                 embed_document,
-                flie_path = temp_file_path,
+                file_path = temp_file_path,
                 qdrant_client = request.app.state.qdrant_client,
                 embedding_model = request.app.state.embedding_model
 
@@ -85,7 +85,7 @@ async def ingest_document(request: Request, file: UploadFile = File(...)):
     return {'message': f'Document {file.filename} ingested successfully.'}
 
 @app.post('/query', dependencies=[Depends(get_api_key)])
-async def query(query_request: QueryRequest, request=Request):
+async def query(query_request: QueryRequest, request: Request):
     """
     Query the RAG model with a prompt. Uses the shared clients for performance.
     """

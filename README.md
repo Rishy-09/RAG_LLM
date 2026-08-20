@@ -6,6 +6,129 @@ Built for fast iteration, privacy, and real-world usage.
 
 ---
 
+## How to start the project on Windows
+
+This project runs in two parts:
+
+* **Ollama** runs directly on Windows and provides the local embedding and chat models.
+* **FastAPI** runs in Docker and connects to Ollama through
+  `host.docker.internal`.
+* **Qdrant** stores the document vectors in your Qdrant Cloud cluster.
+
+### Before the first start
+
+Make sure Docker Desktop is open and its engine says **Running**. You also need
+Ollama running on Windows. This project does not start an Ollama container.
+
+Open Command Prompt or PowerShell and go to the project folder:
+
+```cmd
+cd /d E:\RAG_LLM
+```
+
+Check that Ollama is available and that both required models are installed:
+
+```cmd
+ollama list
+```
+
+The list should contain `nomic-embed-text` and `llama3:instruct`. Install a
+missing model once with:
+
+```cmd
+ollama pull nomic-embed-text
+ollama pull llama3:instruct
+```
+
+If Ollama is not running, start the Ollama application from the Windows Start
+menu. You can also check its local API in a browser at
+<http://localhost:11434/api/tags>.
+
+### Configure `.env`
+
+Create the environment file only if it does not already exist:
+
+```cmd
+copy .env.example .env
+```
+
+Open `.env` and set your Qdrant Cloud values and a private API key:
+
+```env
+QDRANT_URL="https://your-cluster.region.cloud.qdrant.io:6333"
+QDRANT_API_KEY="your-qdrant-manage-write-api-key"
+QDRANT_COLLECTION="rag_collection"
+API_KEY="choose-a-private-api-key-for-this-app"
+```
+
+Use the exact cluster URL from Qdrant Cloud. The collection should use 768
+dimensions, cosine distance, and the **Simple Single embedding** setup for
+`nomic-embed-text`. Never commit the real `.env` file or its keys.
+
+### First start
+
+From `E:\RAG_LLM`, run:
+
+```cmd
+docker compose up --build
+```
+
+The first build downloads the Python image and installs the application
+dependencies, so it can take several minutes. Keep this terminal open. The API
+is ready when the container remains running without startup errors.
+
+Open <http://localhost:8000/docs> in your browser.
+
+### Upload a PDF and ask a question
+
+1. In the Swagger page, click **Authorize**.
+2. Enter the exact `API_KEY` value from `.env` and click **Authorize**.
+3. Open `POST /ingest`, click **Try it out**, choose a PDF, and click **Execute**.
+4. Open `POST /query`, click **Try it out**, and send:
+
+   ```json
+   {
+     "prompt": "What does the uploaded document say about pricing?"
+   }
+   ```
+
+The PDF must be ingested before querying it. Ingestion creates embeddings with
+Ollama and stores them in the Qdrant collection.
+
+### Start it again later
+
+After the image has been built, start Docker Desktop and Ollama, then run:
+
+```cmd
+cd /d E:\RAG_LLM
+
+```
+
+You only need `--build` again after changing the Dockerfile, requirements, or
+application dependencies.
+
+### Stop the project
+
+Press `Ctrl+C` in the terminal running Compose. To remove the stopped container:
+
+```cmd
+docker compose down
+```
+
+### If the API cannot reach Ollama
+
+Quit Ollama from the Windows system tray. Create or update the Windows user
+environment variable below, then start Ollama again:
+
+```text
+OLLAMA_HOST=0.0.0.0:11434
+```
+
+The Compose file already tells the API container to use
+`http://host.docker.internal:11434`. Restarting Ollama after changing the
+environment variable is required.
+---
+
 ## ⚡ Features
 
 | Feature                    | Benefit                              |
@@ -77,7 +200,7 @@ cp .env.example .env
 Required keys:
 
 ```
-QDRANT_URL=YOUR_ENDPOINT
+QDRANT_URL=https://YOUR_CLUSTER.region.cloud.qdrant.io:6333
 QDRANT_API_KEY=YOUR_KEY
 QDRANT_COLLECTION=rag_collection
 
@@ -121,7 +244,7 @@ Example request:
 curl -X POST "http://localhost:8000/query" \
  -H "x-api-key: YOUR_KEY" \
  -H "Content-Type: application/json" \
- -d '{"question": "What does the PDF say about pricing?"}'
+ -d '{"prompt": "What does the PDF say about pricing?"}'
 ```
 
 ![image2](imgproj2.jpg)

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RAG LLM — request sequence flow</title>
+<style>
+  body {
+    margin: 0;
+    padding: 32px;
+    background: #f7f6f2;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: #2c2c2a;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 20px;
+  }
+  #seq-container {
+    background: #ffffff;
+    border: 1px solid #e0ded4;
+    border-radius: 12px;
+    padding: 24px;
+    overflow-x: auto;
+  }
+</style>
+</head>
+<body>
+<h1>RAG LLM — ingest and query request flow</h1>
+<div id="seq-container">
+  <div id="seq"></div>
+</div>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  themeVariables: {
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
+    fontSize: '14px',
+
+    // Backgrounds / lines — hardcoded, no CSS-var dependency
+    background: '#ffffff',
+    primaryColor: '#E6F1FB',        // actor box fill (blue-50)
+    primaryBorderColor: '#378ADD',  // actor box border (blue-400)
+    primaryTextColor: '#0C447C',    // actor box text (blue-800)
+
+    secondaryColor: '#EEEDFE',      // note fill (purple-50)
+    secondaryBorderColor: '#7F77DD',
+    secondaryTextColor: '#26215C',
+
+    tertiaryColor: '#E1F5EE',       // rect background alt
+    tertiaryBorderColor: '#1D9E75',
+    tertiaryTextColor: '#04342C',
+
+    lineColor: '#73726c',
+    textColor: '#2c2c2a',
+    actorLineColor: '#b4b2a9',
+
+    signalColor: '#2c2c2a',
+    signalTextColor: '#2c2c2a',
+
+    labelBoxBkgColor: '#EEEDFE',
+    labelBoxBorderColor: '#7F77DD',
+    labelTextColor: '#26215C',
+
+    noteBkgColor: '#FAEEDA',
+    noteBorderColor: '#BA7517',
+    noteTextColor: '#412402',
+
+    activationBorderColor: '#378ADD',
+    activationBkgColor: '#E6F1FB',
+
+    sequenceNumberColor: '#ffffff'
+  }
+});
+
+const src = `sequenceDiagram
+    autonumber
+    participant Client
+    participant API as FastAPI (main.py)
+    participant Embed as embed.py / query.py
+    participant Ollama
+    participant Qdrant
+
+    rect rgba(120,120,120,0.06)
+    Note over Client,Qdrant: Ingest flow - POST /ingest
+    Client->>API: upload PDF + X-API-Key header
+    API->>API: check API key, check .pdf extension
+    API->>API: save file to _temp folder
+    API->>Embed: embed_document(file_path)
+    Embed->>Embed: load PDF, OCR fallback if empty
+    Embed->>Embed: split into chunks (CHUNK_SIZE)
+    Embed->>Ollama: embed_documents(chunk texts)
+    Ollama-->>Embed: chunk vectors
+    Embed->>Qdrant: upsert points (vector + text + source)
+    Qdrant-->>Embed: write acknowledged
+    Embed->>Embed: delete temp file
+    Embed-->>API: success
+    API-->>Client: 200, "document ingested"
+    end
+
+    rect rgba(120,120,120,0.06)
+    Note over Client,Qdrant: Query flow - POST /query
+    Client->>API: prompt + X-API-Key header
+    API->>API: check API key
+    API->>Ollama: embed_query(prompt)
+    Ollama-->>API: query vector
+    API->>Qdrant: search top_k nearest vectors
+    Qdrant-->>API: matching chunks + metadata
+    API->>API: build context + sources from chunks
+    API->>Ollama: chat completion(prompt + context)
+    Ollama-->>API: generated answer (retried up to 3x)
+    API->>API: append source list to answer
+    API-->>Client: 200, {response: answer}
+    end`;
+
+const { svg } = await mermaid.render('seq-svg', src);
+document.getElementById('seq').innerHTML = svg;
+</script>
+</body>
+</html>
