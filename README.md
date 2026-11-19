@@ -1,4 +1,13 @@
-# 🧠 RAG_LLM — Local & Private Retrieval-Augmented Generation with FastAPI + Ollama + Qdrant
+# RAG_LLM — Local & Private Retrieval-Augmented Generation with FastAPI + Ollama + Qdrant
+
+![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi)
+![LangChain](https://img.shields.io/badge/LangChain-RAG-1C3C3C)
+![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-DC244C)
+![Ollama](https://img.shields.io/badge/Ollama-Local_LLM-black)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 
 A fully local AI chatbot that can ingest your PDFs, store knowledge in a vector database, and answer questions **grounded** in your documents — with **no data leaving your machine**.
 
@@ -129,7 +138,7 @@ The Compose file already tells the API container to use
 environment variable is required.
 ---
 
-## ⚡ Features
+## Features
 
 | Feature                    | Benefit                              |
 | -------------------------- | ------------------------------------ |
@@ -143,7 +152,7 @@ environment variable is required.
 
 ---
 
-## 🧩 Architecture
+## Architecture
 
 ```
               ┌──────────────┐
@@ -168,7 +177,7 @@ environment variable is required.
 
 
 
-## 🏗 Tech Stack
+## Tech Stack
 
 * 🧩 **FastAPI**
 * 🧬 **LangChain**
@@ -178,7 +187,7 @@ environment variable is required.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Clone the repo
 
@@ -255,7 +264,7 @@ Response includes:
 
 ---
 
-## 🧪 Local Model Downloads (Ollama)
+## Local Model Downloads (Ollama)
 
 Install Ollama: [https://ollama.ai](https://ollama.ai)
 
@@ -271,7 +280,7 @@ Switch models easily via `.env`.
 
 ---
 
-## 🔐 Security Notes
+## Security Notes
 
 * API requires `x-api-key`
 * CORS restricted (only allowed origins)
@@ -280,7 +289,7 @@ Switch models easily via `.env`.
 
 ---
 
-## 🛤 Roadmap
+## Roadmap
 
 * Web UI for chatting with sources
 * Streaming responses
