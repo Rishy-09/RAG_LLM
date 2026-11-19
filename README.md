@@ -8,7 +8,6 @@
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-
 A fully local AI chatbot that can ingest your PDFs, store knowledge in a vector database, and answer questions **grounded** in your documents — with **no data leaving your machine**.
 
 Built for fast iteration, privacy, and real-world usage.
@@ -19,10 +18,10 @@ Built for fast iteration, privacy, and real-world usage.
 
 This project runs in two parts:
 
-* **Ollama** runs directly on Windows and provides the local embedding and chat models.
-* **FastAPI** runs in Docker and connects to Ollama through
+- **Ollama** runs directly on Windows and provides the local embedding and chat models.
+- **FastAPI** runs in Docker and connects to Ollama through
   `host.docker.internal`.
-* **Qdrant** stores the document vectors in your Qdrant Cloud cluster.
+- **Qdrant** stores the document vectors in your Qdrant Cloud cluster.
 
 ### Before the first start
 
@@ -136,6 +135,7 @@ OLLAMA_HOST=0.0.0.0:11434
 The Compose file already tells the API container to use
 `http://host.docker.internal:11434`. Restarting Ollama after changing the
 environment variable is required.
+
 ---
 
 ## Features
@@ -171,19 +171,17 @@ environment variable is required.
                    Answer ✔
 ```
 
-![image1](imgproj5.jpg)
+![image1](assets/imgproj5.jpg)
 
 ---
 
-
-
 ## Tech Stack
 
-* 🧩 **FastAPI**
-* 🧬 **LangChain**
-* 🧠 **Ollama** (Llama3 / Mistral models)
-* 🗄 **Qdrant** (cloud or local)
-* 🐳 **Docker & Docker Compose**
+- 🧩 **FastAPI**
+- 🧬 **LangChain**
+- 🧠 **Ollama** (Llama3 / Mistral models)
+- 🗄 **Qdrant** (cloud or local)
+- 🐳 **Docker & Docker Compose**
 
 ---
 
@@ -227,7 +225,8 @@ TOP_K=5
 > Don’t commit your real `.env` to GitHub. `.gitignore` protects it.
 
 ---
-![image1](imgproj1.jpg)
+
+![image1](assets/imgproj1.jpg)
 
 ## ▶ Run with Docker
 
@@ -256,7 +255,7 @@ curl -X POST "http://localhost:8000/query" \
  -d '{"prompt": "What does the PDF say about pricing?"}'
 ```
 
-![image2](imgproj2.jpg)
+![image2](assets/imgproj2.jpg)
 Response includes:
 ✔ Answer
 ✔ Source text chunks
@@ -274,7 +273,7 @@ Pull a model:
 ollama pull llama3:instruct
 ```
 
-![image4](imgjproj4.jpg)
+![image4](assets/imgjproj4.jpg)
 
 Switch models easily via `.env`.
 
@@ -282,25 +281,27 @@ Switch models easily via `.env`.
 
 ## Security Notes
 
-* API requires `x-api-key`
-* CORS restricted (only allowed origins)
-* Secrets never stored in Git
-* Safe for local confidential documents
+- API requires `x-api-key`
+- CORS restricted (only allowed origins)
+- Secrets never stored in Git
+- Safe for local confidential documents
 
 ---
 
 ## Roadmap
 
-* Web UI for chatting with sources
-* Streaming responses
-* Multi-user document buckets
-* Citations with timestamps + PDF page mapping
+- Web UI for chatting with sources
+- Streaming responses
+- Multi-user document buckets
+- Citations with timestamps + PDF page mapping
 
 ---
-![image3](imgproj3.jpg)
+
+![image3](assets/imgproj3.jpg)
 
 ## 🖤 Credits
 
 Made by Naman (Rishy-09)
 Open-source forever.
+
 ---
