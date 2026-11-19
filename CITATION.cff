@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this project in your work, please cite it as below."
+authors:
+  - family-names: "Chanana"
+    given-names: "Naman"
+title: "RAG_LLM"
+abstract: "A local retrieval-augmented generation system for private PDF question-answering using FastAPI, Ollama, LangChain, and Qdrant."
+date-released: 2026-11-19
+url: "https://github.com/Rishy-09/RAG_LLM"
+repository-code: "https://github.com/Rishy-09/RAG_LLM"
+license: MIT
+keywords:
+  - retrieval-augmented generation
+  - RAG
+  - large language models
+  - Ollama
+  - LangChain
+  - Qdrant
+  - FastAPI
